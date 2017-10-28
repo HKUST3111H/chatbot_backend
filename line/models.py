@@ -9,10 +9,11 @@ class User(models.Model):
 	def __str__(self):
 		return self.name
 
+	id = models.CharField(max_length=50, primary_key = True)
 	name = models.CharField(max_length=20)
 	phone_num = models.CharField(max_length=20)
 	age = models.CharField(max_length=20)
-	state = models.IntegerField()	
+	state = models.IntegerField(default=0)	
 
 class Tour(models.Model):
 
@@ -37,6 +38,7 @@ class TourOffering(models.Model):
 	capacity_max = models.IntegerField(default=30)
 	guide_name = models.CharField(max_length=20)
 	guide_line = models.CharField(max_length=50)
+	state = models.IntegerField(default=0)
 	
 	def was_offered_recently(self):
 		now = timezone.now()
@@ -51,3 +53,4 @@ class Booking(models.Model):
 	tour_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2)
 	paid_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2)
 	special_request = models.CharField(default="None", max_length=200)
+	state = models.IntegerField(default=0)
