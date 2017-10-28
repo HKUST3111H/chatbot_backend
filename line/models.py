@@ -10,11 +10,11 @@ class User(models.Model):
 		return self.name
 
 	id = models.CharField(max_length=50, primary_key = True)
-	name = models.CharField(max_length=20, default=None)
-	phone_num = models.CharField(max_length=20, default=None)
-	age = models.CharField(max_length=20, default=None)
+	name = models.CharField(max_length=20, null=True)
+	phone_num = models.CharField(max_length=20, null=True)
+	age = models.CharField(max_length=20, null=True)
 	state = models.IntegerField(default=0)	
-	last_login = models.DateTimeField('login date', default=None)
+	last_login = models.DateTimeField('login date', null=True)
 
 class Tour(models.Model):
 
