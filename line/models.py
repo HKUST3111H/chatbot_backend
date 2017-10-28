@@ -14,6 +14,7 @@ class User(models.Model):
 	phone_num = models.CharField(max_length=20)
 	age = models.CharField(max_length=20)
 	state = models.IntegerField(default=0)	
+	last_login = models.DateTimeField('login date', default=None)
 
 class Tour(models.Model):
 
