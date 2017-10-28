@@ -23,7 +23,8 @@ class Tour(models.Model):
 	name = models.CharField(max_length=50)
 	description = models.CharField(max_length=200)
 	duration = models.IntegerField(default=3)
-	price = models.IntegerField(default=0)
+	weekday_price = models.IntegerField(default=0)
+	weekend_price = models.IntegerField(default=0)
 
 class TourOffering(models.Model):
 	
