@@ -30,6 +30,7 @@ class BookingAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
 	search_fields = ['id', 'name']
 	list_filter = ['last_login']
+	list_display = ('id', 'name', 'age', 'state', 'last_login')
 
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):
