@@ -25,7 +25,10 @@ SECRET_KEY = 'w(&s3nu#b5mk$!#q(3%d7jdmj4tcy4!x^=ly6lcp_p$gtqizhl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'chatbot-backend.herokuapp.com',
+    'localhost',
+]
 
 
 # Application definition
