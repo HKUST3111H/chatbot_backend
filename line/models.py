@@ -1,0 +1,39 @@
+from django.db import models
+
+import datetime
+from django.utils import timezone
+# Create your models here.
+
+class User(models.Model):
+
+	def __str__(self):
+		return self.name
+
+	name = models.CharField(max_length=20)
+	phone_num = models.CharField(max_length=20)
+	age = models.CharField(max_length=20)
+	state = models.IntegerField()	
+
+class Tour(models.Model):
+
+	def __str__(self):
+		return self.name
+	name = models.CharField(max_length=50)
+	description = models.CharField(max_length=200)
+	duration = models.IntegerField(default=3)
+	price = models.IntegerField(default=0)
+
+class TourOffering(models.Model):
+	
+	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
+	offer_date = models.DateTimeField('offer date')
+	users = models.ManyToManyField(User)
+	hotel = models.CharField(max_length=200)
+	capacity_min = models.IntegerField(default=5)
+	capacity_max = models.IntegerField(default=30)
+	guide_name = models.CharField(max_length=20)
+	guide_line = models.CharField(max_length=50)
+	
+	def was_offered_recently(self):
+		now = timezone.now()
+		return now >= self.offer_date >= now - datetime.timedelta(days=1)
