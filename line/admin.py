@@ -36,3 +36,4 @@ class UserAdmin(admin.ModelAdmin):
 class FaqAdmin(admin.ModelAdmin):
 	search_fields = ['question', 'answer']
 	list_filter = ['hit']
+	list_display = ('question', 'answer', 'hit')
