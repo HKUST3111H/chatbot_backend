@@ -56,3 +56,8 @@ class Booking(models.Model):
 	paid_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2)
 	special_request = models.CharField(default="None", max_length=200)
 	state = models.IntegerField(default=0)
+
+class Faq(models.Model):
+	question = models.CharField(max_length=500)
+	answer = models.CharField(max_length=500)
+	hit = models.IntegerField(default=0)
