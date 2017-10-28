@@ -5,7 +5,6 @@ from .models import *
 admin.AdminSite.site_header = "Tour CMS"
 admin.AdminSite.site_title = "Tour CMS"
 
-admin.site.register(User)
 
 class TourOfferingInline(admin.TabularInline):
 	model = TourOffering
@@ -20,5 +19,9 @@ class TourAdmin(admin.ModelAdmin):
 	search_fields = ['name', 'description']	
 	list_filter = ['duration', 'price']
 
+class BookingAdmin(admin.ModelAdmin):
+	search_fields = ['tourOffering.name', 'user.name']
+
+admin.site.register(User)
 admin.site.register(Tour, TourAdmin)
 admin.site.register(TourOffering, TourOfferingAdmin)
