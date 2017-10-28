@@ -25,3 +25,4 @@ class BookingAdmin(admin.ModelAdmin):
 admin.site.register(User)
 admin.site.register(Tour, TourAdmin)
 admin.site.register(TourOffering, TourOfferingAdmin)
+admin.site.register(Booking, BookingAdmin)

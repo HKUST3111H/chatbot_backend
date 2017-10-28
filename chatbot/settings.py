@@ -91,7 +91,7 @@ import dj_database_url
 # Port = "5432"
 # Password = "b5dcf40eb86bdc37046867a9d218fe37276c5c41abd6fe0b1ca7216fe7e51b26"
 
-DATABASES['default'] =  dj_database_url.config(default='postgres://urvfkjykdbmgxl:b5dcf40eb86bdc37046867a9d218fe37276c5c41abd6fe0b1ca7216fe7e51b26@ec2-23-21-245-156.compute-1.amazonaws.com:5432/d1u7qhtgvfnmgb')
+DATABASES['default'] =  dj_database_url.config(conn_max_age=600, default='postgres://urvfkjykdbmgxl:b5dcf40eb86bdc37046867a9d218fe37276c5c41abd6fe0b1ca7216fe7e51b26@ec2-23-21-245-156.compute-1.amazonaws.com:5432/d1u7qhtgvfnmgb')
 
 
 # Password validation
