@@ -5,20 +5,33 @@ from .models import *
 admin.AdminSite.site_header = "Tour CMS"
 admin.AdminSite.site_title = "Tour CMS"
 
-admin.site.register(User)
 
 class TourOfferingInline(admin.TabularInline):
 	model = TourOffering
 	extra = 3
 
+@admin.register(TourOffering)
 class TourOfferingAdmin(admin.ModelAdmin):
 	search_fields = ['tour.name', 'tour.description']
 	list_filter = ['offer_date']
+	filter_horizontal = ['user']
 
+@admin.register(Tour)
 class TourAdmin(admin.ModelAdmin):
 	inlines = [TourOfferingInline]
 	search_fields = ['name', 'description']	
-	list_filter = ['duration', 'price']
+	list_filter = ['duration', 'weekday_price', 'weekend_price']
 
-admin.site.register(Tour, TourAdmin)
-admin.site.register(TourOffering, TourOfferingAdmin)
+@admin.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+	search_fields = ['tourOffering.name', 'user.name']
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+	search_fields = ['id', 'name']
+	list_filter = ['last_login']
+
+@admin.register(Faq)
+class FaqAdmin(admin.ModelAdmin):
+	search_fields = ['question', 'answer']
+	list_filter = ['hit']

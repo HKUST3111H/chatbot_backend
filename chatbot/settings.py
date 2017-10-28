@@ -25,7 +25,10 @@ SECRET_KEY = 'w(&s3nu#b5mk$!#q(3%d7jdmj4tcy4!x^=ly6lcp_p$gtqizhl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'chatbot-backend.herokuapp.com',
+    'localhost',
+]
 
 
 # Application definition
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -87,7 +91,7 @@ import dj_database_url
 # Port = "5432"
 # Password = "b5dcf40eb86bdc37046867a9d218fe37276c5c41abd6fe0b1ca7216fe7e51b26"
 
-DATABASES['default'] =  dj_database_url.config(default='postgres://urvfkjykdbmgxl:b5dcf40eb86bdc37046867a9d218fe37276c5c41abd6fe0b1ca7216fe7e51b26@ec2-23-21-245-156.compute-1.amazonaws.com:5432/d1u7qhtgvfnmgb')
+DATABASES['default'] =  dj_database_url.config(conn_max_age=600, default='postgres://urvfkjykdbmgxl:b5dcf40eb86bdc37046867a9d218fe37276c5c41abd6fe0b1ca7216fe7e51b26@ec2-23-21-245-156.compute-1.amazonaws.com:5432/d1u7qhtgvfnmgb')
 
 
 # Password validation
@@ -114,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Hong_Kong'
 
 USE_I18N = True
 
