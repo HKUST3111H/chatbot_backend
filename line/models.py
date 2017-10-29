@@ -65,7 +65,7 @@ class TourOffering(models.Model):
 	guide_name = models.CharField(max_length=20)
 	guide_line = models.CharField(max_length=50)
 	state = models.IntegerField(default=0)
-	price = models.IntegerField(default=-1)
+	price = models.DecimalField(default=0, max_digits=8, decimal_places=2)
 
 	was_offered_recently.admin_order_field = 'offer_date'
 	was_offered_recently.boolean = True
