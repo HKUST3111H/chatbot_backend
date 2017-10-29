@@ -115,12 +115,15 @@ class Faq(models.Model):
 		return self.question
 
 	def get_keyword(self):
-		return "\n".join([k.keyword_text for k in self.keyword.all()])
+		return "<br>".join([k.keyword_text for k in self.keyword.all()])
 
 	question = models.CharField(max_length=500)
 	answer = models.CharField(max_length=500)
 	hit = models.IntegerField(default=0)
 	keyword = models.ManyToManyField(Keyword)
+
+	get_keyword.allow_tags = True
+	get_keyword.short_description = "Keyword"
 
 class UnknownQuestion(models.Model):
 
