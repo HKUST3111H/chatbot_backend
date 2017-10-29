@@ -10,12 +10,16 @@ class TourOfferingInline(admin.TabularInline):
 	model = TourOffering
 	extra = 3
 
+class BookingInline(admin.TabularInline):
+	model = Booking
+	extra = 1
+
 @admin.register(TourOffering)
 class TourOfferingAdmin(admin.ModelAdmin):
-	list_display = ['tour_name', 'user_name', 'state', 'was_offered_recently']
+	inlines = [BookingInline, ]
+	list_display = ['tour_name', 'get_user_name', 'state', 'was_offered_recently']
 	search_fields = ['tour__name']
 	list_filter = ['offer_date']
-	filter_horizontal = ['user']
 
 @admin.register(Tour)
 class TourAdmin(admin.ModelAdmin):
@@ -30,6 +34,7 @@ class BookingAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
+	inlines = [BookingInline,]
 	list_display = ['name', 'id', 'state', 'last_login']
 	exclude = ['id',]
 	search_fields = ['id', 'name']

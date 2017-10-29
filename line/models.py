@@ -47,8 +47,8 @@ class TourOffering(models.Model):
 	def tour_name(self):
 		return self.tour.name
 
-	def user_name(self):
-		return self.user.name
+	def get_user_name(self):
+		return "\n".join([user.name for user in self.user.all()])
 
 	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 	offer_date = models.DateTimeField('offer date', default=default_offer_time)
