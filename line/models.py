@@ -87,12 +87,12 @@ class Booking(models.Model):
 
 	tourOffering = models.ForeignKey(TourOffering, on_delete=models.CASCADE)
 	user  = models.ForeignKey(User, on_delete=models.CASCADE)
-	adult_num = models.IntegerField(default=1)
-	child_num = models.IntegerField(default=0)
-	toolder_num = models.IntegerField(default=0)
-	tour_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2)
-	paid_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2)
-	special_request = models.CharField(default="None", max_length=200)
+	adult_num = models.IntegerField(default=1, null=True)
+	child_num = models.IntegerField(default=0, null=True)
+	toddler_num = models.IntegerField(default=0, null=True)
+	tour_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2, null=True)
+	paid_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2, null=True)
+	special_request = models.CharField(default="None", max_length=200, null=True)
 	state = models.IntegerField(default=0)
 
 class UserChoose(models.Model):
@@ -126,5 +126,5 @@ class UnknownQuestion(models.Model):
 
 	def __str__(self):
 		return self.question
-		
+
 	question = models.CharField(max_length=500)
