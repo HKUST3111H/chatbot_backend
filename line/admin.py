@@ -12,12 +12,48 @@ class TourOfferingInline(admin.TabularInline):
 
 class BookingInline(admin.TabularInline):
 	model = Booking
+	exclude = ['tour_fee']
 	extra = 1
 
 @admin.register(TourOffering)
 class TourOfferingAdmin(admin.ModelAdmin):
+
+	# input is TourOffering obejct
+	def default_offer_fee(self, obj):
+		if obj.offer_date.weekday() < 5:
+			return obj.tour.weekday_price
+		else :
+			return obj.tour.weekend_price
+
+	# input is booking object 
+	def default_tour_fee(self, booking_obj, tourOffing_obj):
+		return booking_obj.adult_num * tourOffing_obj.price + 0.8 * booking_obj.child_num * tourOffing_obj.price 
+
+	def update_price(self, request, queryset):
+		rows_updated = 0
+		for obj in queryset:
+			if obj.price != self.default_offer_fee(obj):
+				obj.price = self.default_offer_fee(obj)
+				rows_updated += 1
+				print (obj.price, self.default_offer_fee(obj))
+				obj.save()
+		if rows_updated == 1:
+			message_bit = "1 tour offering was"
+		else:
+			message_bit = "{} tour offerings were".format(rows_updated)
+		self.message_user(request, "{} successfully updated.".format(message_bit))
+
+	def save_model(self, request, obj, form, change):
+		obj.price = self.default_offer_fee(obj)
+		for booking in obj.booking_set.all():
+			booking.tour_fee = self.default_tour_fee(booking, obj)
+			booking.save()
+		obj.save()
+
+	actions = [update_price]
+	exclude = ['price']
 	inlines = [BookingInline, ]
-	list_display = ['tour_name', 'get_user_name', 'state', 'was_offered_recently']
+	list_display = ['tour_name', 'get_user_name', 'price', 'state', 'offer_date', 'was_offered_recently']
 	search_fields = ['tour__name']
 	list_filter = ['offer_date']
 

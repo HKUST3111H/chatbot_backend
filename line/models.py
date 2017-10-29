@@ -44,11 +44,13 @@ class TourOffering(models.Model):
 	    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 	    return start
 
+
 	def tour_name(self):
 		return self.tour.name
 
 	def get_user_name(self):
-		return "\n".join([user.name for user in self.user.all()])
+		return "<br>".join([user.name for user in self.user.all()])
+		# return user.name
 
 	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 	offer_date = models.DateTimeField('offer date', default=default_offer_time)
@@ -63,10 +65,14 @@ class TourOffering(models.Model):
 	guide_name = models.CharField(max_length=20)
 	guide_line = models.CharField(max_length=50)
 	state = models.IntegerField(default=0)
+	price = models.IntegerField(default=-1)
+
 	was_offered_recently.admin_order_field = 'offer_date'
 	was_offered_recently.boolean = True
 	was_offered_recently.short_description = 'Offered recently?'
-	
+
+	get_user_name.allow_tags = True
+	get_user_name.short_description = "User name"
 
 class Booking(models.Model):
 
@@ -81,12 +87,12 @@ class Booking(models.Model):
 
 	tourOffering = models.ForeignKey(TourOffering, on_delete=models.CASCADE)
 	user  = models.ForeignKey(User, on_delete=models.CASCADE)
-	adult_num = models.IntegerField(default=1)
-	child_num = models.IntegerField(default=0)
-	toolder_num = models.IntegerField(default=0)
-	tour_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2)
-	paid_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2)
-	special_request = models.CharField(default="None", max_length=200)
+	adult_num = models.IntegerField(default=1, null=True)
+	child_num = models.IntegerField(default=0, null=True)
+	toddler_num = models.IntegerField(default=0, null=True)
+	tour_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2, null=True)
+	paid_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2, null=True)
+	special_request = models.CharField(default="None", max_length=200, null=True)
 	state = models.IntegerField(default=0)
 
 class UserChoose(models.Model):
@@ -109,10 +115,19 @@ class Faq(models.Model):
 		return self.question
 
 	def get_keyword(self):
-		return "\n".join([k.keyword_text for k in self.keyword.all()])
+		return "<br>".join([k.keyword_text for k in self.keyword.all()])
 
 	question = models.CharField(max_length=500)
 	answer = models.CharField(max_length=500)
 	hit = models.IntegerField(default=0)
 	keyword = models.ManyToManyField(Keyword)
 
+	get_keyword.allow_tags = True
+	get_keyword.short_description = "Keyword"
+
+class UnknownQuestion(models.Model):
+
+	def __str__(self):
+		return self.question
+
+	question = models.CharField(max_length=500)
