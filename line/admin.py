@@ -16,8 +16,27 @@ class BookingInline(admin.TabularInline):
 
 @admin.register(TourOffering)
 class TourOfferingAdmin(admin.ModelAdmin):
+
+	def update_price(self, request, queryset):
+		rows_updated = 0
+		def default_offer_fee(obj):
+			if obj.offer_date.weekday() < 5:
+				return obj.tour.weekday_price
+			else :
+				return obj.tour.weekend_price
+		for obj in queryset:
+			obj.price = default_offer_fee(obj)
+			rows_updated += 1
+			print (obj.price, default_offer_fee(obj))
+			obj.save()
+		if rows_updated == 1:
+			message_bit = "1 tour offering was"
+		else:
+			message_bit = "{} tour offerings were".format(rows_updated)
+		self.message_user(request, "{} successfully updated.".format(message_bit))
+	actions = [update_price]
 	inlines = [BookingInline, ]
-	list_display = ['tour_name', 'get_user_name', 'state', 'was_offered_recently']
+	list_display = ['tour_name', 'get_user_name', 'price', 'state', 'was_offered_recently']
 	search_fields = ['tour__name']
 	list_filter = ['offer_date']
 

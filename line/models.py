@@ -44,11 +44,13 @@ class TourOffering(models.Model):
 	    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 	    return start
 
+
 	def tour_name(self):
 		return self.tour.name
 
 	def get_user_name(self):
-		return "\n".join([user.name for user in self.user.all()])
+		return "<br>".join([user.name for user in self.user.all()])
+		# return user.name
 
 	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 	offer_date = models.DateTimeField('offer date', default=default_offer_time)
@@ -63,10 +65,14 @@ class TourOffering(models.Model):
 	guide_name = models.CharField(max_length=20)
 	guide_line = models.CharField(max_length=50)
 	state = models.IntegerField(default=0)
+	price = models.IntegerField(default=-1)
+
 	was_offered_recently.admin_order_field = 'offer_date'
 	was_offered_recently.boolean = True
 	was_offered_recently.short_description = 'Offered recently?'
-	
+
+	get_user_name.allow_tags = True
+	get_user_name.short_description = "User name"
 
 class Booking(models.Model):
 
@@ -116,3 +122,9 @@ class Faq(models.Model):
 	hit = models.IntegerField(default=0)
 	keyword = models.ManyToManyField(Keyword)
 
+class UnknownQuestion(models.Model):
+
+	def __str__(self):
+		return self.question
+		
+	question = models.CharField(max_length=500)
