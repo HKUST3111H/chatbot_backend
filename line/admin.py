@@ -10,11 +10,16 @@ class TourOfferingInline(admin.TabularInline):
 	model = TourOffering
 	extra = 3
 
+class BookingInline(admin.TabularInline):
+	model = Booking
+	extra = 1
+
 @admin.register(TourOffering)
 class TourOfferingAdmin(admin.ModelAdmin):
-	search_fields = ['tour.name', 'tour.description']
+	inlines = [BookingInline, ]
+	list_display = ['tour_name', 'get_user_name', 'state', 'was_offered_recently']
+	search_fields = ['tour__name']
 	list_filter = ['offer_date']
-	filter_horizontal = ['user']
 
 @admin.register(Tour)
 class TourAdmin(admin.ModelAdmin):
@@ -24,16 +29,29 @@ class TourAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-	search_fields = ['tourOffering.name', 'user.name']
+	search_fields = ['tourOffering__tour__name', 'user__name']
+	list_display = ('tour_name', 'user_name')
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
+	inlines = [BookingInline,]
+	list_display = ['name', 'id', 'state', 'last_login']
+	exclude = ['id',]
 	search_fields = ['id', 'name']
 	list_filter = ['last_login']
-	list_display = ('id', 'name', 'age', 'state', 'last_login')
+	empty_value_display = '-Not filled-'
 
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):
 	search_fields = ['question', 'answer']
 	list_filter = ['hit']
-	list_display = ('question', 'answer', 'hit')
+	list_display = ['question', 'answer', 'get_keyword', 'hit']
+	filter_horizontal = ['keyword']
+
+@admin.register(Keyword)
+class KeywordAdmin(admin.ModelAdmin):
+	search_fields = ['keyword_text']
+
+@admin.register(UserChoose)
+class UserChooseAdmin(admin.ModelAdmin):
+	search_fields = ['user__name']

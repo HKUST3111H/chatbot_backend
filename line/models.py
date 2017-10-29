@@ -7,7 +7,10 @@ from django.utils import timezone
 class User(models.Model):
 
 	def __str__(self):
-		return self.name
+		if self.name:
+			return self.name
+		else : 
+			return ""
 
 	id = models.CharField(max_length=50, primary_key = True)
 	name = models.CharField(max_length=20, null=True)
@@ -20,6 +23,7 @@ class Tour(models.Model):
 
 	def __str__(self):
 		return self.name
+
 	name = models.CharField(max_length=50)
 	description = models.CharField(max_length=200)
 	duration = models.IntegerField(default=3)
@@ -27,6 +31,9 @@ class Tour(models.Model):
 	weekend_price = models.IntegerField(default=0)
 
 class TourOffering(models.Model):
+
+	def __str__(self):
+		return self.tour.name
 	
 	def was_offered_recently(self):
 		now = timezone.now()
@@ -36,6 +43,12 @@ class TourOffering(models.Model):
 	    now = timezone.now()
 	    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 	    return start
+
+	def tour_name(self):
+		return self.tour.name
+
+	def get_user_name(self):
+		return "\n".join([user.name for user in self.user.all()])
 
 	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 	offer_date = models.DateTimeField('offer date', default=default_offer_time)
@@ -50,9 +63,22 @@ class TourOffering(models.Model):
 	guide_name = models.CharField(max_length=20)
 	guide_line = models.CharField(max_length=50)
 	state = models.IntegerField(default=0)
+	was_offered_recently.admin_order_field = 'offer_date'
+	was_offered_recently.boolean = True
+	was_offered_recently.short_description = 'Offered recently?'
 	
 
 class Booking(models.Model):
+
+	def __str__(self):
+		return self.tourOffering.tour.name
+
+	def tour_name(self):
+		return self.tourOffering.tour.name
+
+	def user_name(self):
+		return self.user.name
+
 	tourOffering = models.ForeignKey(TourOffering, on_delete=models.CASCADE)
 	user  = models.ForeignKey(User, on_delete=models.CASCADE)
 	adult_num = models.IntegerField(default=1)
@@ -63,7 +89,30 @@ class Booking(models.Model):
 	special_request = models.CharField(default="None", max_length=200)
 	state = models.IntegerField(default=0)
 
+class UserChoose(models.Model):
+	def __str__(self):
+		return self.user.name
+
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	tour_id = models.CharField(max_length=20)
+
+class Keyword(models.Model):
+
+	def __str__(self):
+		return self.keyword_text
+
+	keyword_text = models.CharField(max_length=20)
+
 class Faq(models.Model):
+
+	def __str__(self):
+		return self.question
+
+	def get_keyword(self):
+		return "\n".join([k.keyword_text for k in self.keyword.all()])
+
 	question = models.CharField(max_length=500)
 	answer = models.CharField(max_length=500)
 	hit = models.IntegerField(default=0)
+	keyword = models.ManyToManyField(Keyword)
+
