@@ -7,7 +7,10 @@ from django.utils import timezone
 class User(models.Model):
 
 	def __str__(self):
-		return self.name
+		if self.name:
+			return self.name
+		else:
+			return ""
 
 	id = models.CharField(max_length=50, primary_key = True)
 	name = models.CharField(max_length=20, null=True)
