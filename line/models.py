@@ -7,10 +7,7 @@ from django.utils import timezone
 class User(models.Model):
 
 	def __str__(self):
-		if self.name:
-			return self.name
-		else : 
-			return ""
+		return self.name
 
 	id = models.CharField(max_length=50, primary_key = True)
 	name = models.CharField(max_length=20, null=True)
@@ -49,8 +46,7 @@ class TourOffering(models.Model):
 		return self.tour.name
 
 	def get_user_name(self):
-		return "<br>".join([user.name for user in self.user.all()])
-		# return user.name
+		return "<br>".join([user.name for user in self.user.all() if user.name is not None])
 
 	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 	offer_date = models.DateTimeField('offer date', default=default_offer_time)
