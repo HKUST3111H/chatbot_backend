@@ -72,7 +72,7 @@ class BookingAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
 	inlines = [BookingInline,]
-	list_display = ['name', 'id', 'phone_num', 'state', 'last_login']
+	list_display = ['name', 'line_id', 'phone_num', 'state', 'last_login', 'travel_id',]
 	exclude = ['id',]
 	search_fields = ['id', 'name']
 	list_filter = ['last_login']

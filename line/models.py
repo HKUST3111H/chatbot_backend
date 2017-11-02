@@ -12,12 +12,25 @@ class User(models.Model):
 		else:
 			return ""
 
+	def line_id(self):
+		return self.id
+
+	def travel_id(self):
+		return self.travel_id
+
 	id = models.CharField(max_length=50, primary_key = True)
 	name = models.CharField(max_length=20, null=True)
 	phone_num = models.CharField(max_length=20, null=True)
 	age = models.CharField(max_length=20, null=True)
 	state = models.IntegerField(default=0)	
 	last_login = models.DateTimeField('login date', null=True)
+	travel_id = models.CharField(max_length=20, null=True)
+
+	line_id.admin_order_field = 'id'
+	line_id.short_description = 'Line ID'
+
+	travel_id.admin_order_field = 'travel_id'
+	travel_id.short_description = 'Travel ID'
 
 class Tour(models.Model):
 
