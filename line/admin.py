@@ -59,6 +59,7 @@ class TourOfferingAdmin(admin.ModelAdmin):
 
 @admin.register(Tour)
 class TourAdmin(admin.ModelAdmin):
+	list_display = ['name', 'description', 'duration', 'weekday_price', 'weekend_price']
 	inlines = [TourOfferingInline]
 	search_fields = ['name', 'description']	
 	list_filter = ['duration', 'weekday_price', 'weekend_price']
@@ -71,7 +72,7 @@ class BookingAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
 	inlines = [BookingInline,]
-	list_display = ['name', 'id', 'state', 'last_login']
+	list_display = ['name', 'line_id', 'phone_num', 'state', 'last_login', 'travel_id',]
 	exclude = ['id',]
 	search_fields = ['id', 'name']
 	list_filter = ['last_login']

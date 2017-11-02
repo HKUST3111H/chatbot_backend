@@ -9,8 +9,14 @@ class User(models.Model):
 	def __str__(self):
 		if self.name:
 			return self.name
-		else : 
+		else:
 			return ""
+
+	def line_id(self):
+		return self.id
+
+	def travel_id(self):
+		return self.travel_id
 
 	id = models.CharField(max_length=50, primary_key = True)
 	name = models.CharField(max_length=20, null=True)
@@ -18,6 +24,13 @@ class User(models.Model):
 	age = models.CharField(max_length=20, null=True)
 	state = models.IntegerField(default=0)	
 	last_login = models.DateTimeField('login date', null=True)
+	travel_id = models.CharField(max_length=20, null=True)
+
+	line_id.admin_order_field = 'id'
+	line_id.short_description = 'Line ID'
+
+	travel_id.admin_order_field = 'travel_id'
+	travel_id.short_description = 'Travel ID'
 
 class Tour(models.Model):
 
@@ -49,8 +62,7 @@ class TourOffering(models.Model):
 		return self.tour.name
 
 	def get_user_name(self):
-		return "<br>".join([user.name for user in self.user.all()])
-		# return user.name
+		return "<br>".join([user.name for user in self.user.all() if user.name is not None])
 
 	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 	offer_date = models.DateTimeField('offer date', default=default_offer_time)
@@ -65,7 +77,7 @@ class TourOffering(models.Model):
 	guide_name = models.CharField(max_length=20)
 	guide_line = models.CharField(max_length=50)
 	state = models.IntegerField(default=0)
-	price = models.IntegerField(default=-1)
+	price = models.DecimalField(default=0, max_digits=8, decimal_places=2)
 
 	was_offered_recently.admin_order_field = 'offer_date'
 	was_offered_recently.boolean = True
