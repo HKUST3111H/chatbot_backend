@@ -8,6 +8,7 @@ admin.AdminSite.site_title = "Tour CMS"
 
 class TourOfferingInline(admin.TabularInline):
 	model = TourOffering
+	exclude = ['price']
 	extra = 3
 
 class BookingInline(admin.TabularInline):
