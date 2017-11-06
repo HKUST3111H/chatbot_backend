@@ -1,7 +1,11 @@
 from django.contrib import admin
+import requests as Requests
+from django.shortcuts import render, render_to_response
+from django.http import HttpResponse, HttpResponseRedirect
 
 # Register your models here.
 from .models import *
+from .forms import *
 admin.AdminSite.site_header = "Tour CMS"
 admin.AdminSite.site_title = "Tour CMS"
 
@@ -72,6 +76,36 @@ class BookingAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
+
+	def push_message(self, request, queryset):
+
+		form = None
+
+		print (request.POST)
+		if 'push' in request.POST:
+			form = MessageForm(request.POST)
+			print ("POST")
+			if form.is_valid():
+				print ("valid")
+				print (form.cleaned_data)
+				message = form.cleaned_data['message']
+				for obj in queryset:
+					post_data = {'receiver': obj.id, 'message': message+obj.name}
+					post_data['receiver'] = "Ufedbdb7c3d944c326a4251ac135b69e3"
+					responese = Requests.post("https://gentle-fjord-43717.herokuapp.com/push", data=post_data)
+					print (responese.content)
+				self.message_user(request, "{} message successfully send.".format(len(queryset)))
+				return HttpResponseRedirect(request.get_full_path())
+
+		if not form:
+			form = MessageForm(initial={'message': ""})
+
+		return render(request, "admin/user/action_push_message.html", {'users': queryset, 'form': form})
+		# return render_to_response("admin/user/action_push_message.html", {'users': queryset, 'form': form})
+
+
+
+	actions = [push_message]
 	inlines = [BookingInline,]
 	list_display = ['name', 'line_id', 'phone_num', 'state', 'last_login', 'travel_id',]
 	exclude = ['id',]
