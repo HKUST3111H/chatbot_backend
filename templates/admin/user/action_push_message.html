@@ -1,24 +1,25 @@
-
 {% extends "admin/base_site.html" %}
 
+{% load staticfiles%}
+{% include 'material/includes/material_css.html' %}
+<script src="{% static 'material/js/jquery.js' %}"></script>
+{% include 'material/includes/material_js.html' %}
+
+{% load i18n admin_static material_form %} 
+
 {% block content %}
-    <form action="" method="post">
+    <form action="" style="padding: 30px" method="post">
 
         <!-- <ul>{{ users|unordered_list }}</ul> -->
         <p>
         	Pushing message to the following user:
         </p>
-        {% for user in users %}
-	        <p>
-	        	{{ user }}
-	        </p>
-	        <input type="hidden" name="_selected_action" value="{{ user.pk }}" />
-        {% endfor %}
 
-        {{form}}
     	{% csrf_token %}
+        {% form form=form %}{% endform %}
+        <input type="hidden" name="_selected_action" value="{users.pk}">
 		<input type="hidden" name="action" value="push_message" />
-	    <input type="submit" name="push" value="Push Message" />
+	    <button type='submit' name='push' class="btn">Push Message</button>
 
     </form>
 {% endblock %}

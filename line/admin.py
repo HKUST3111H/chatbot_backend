@@ -89,16 +89,17 @@ class UserAdmin(admin.ModelAdmin):
 				print ("valid")
 				print (form.cleaned_data)
 				message = form.cleaned_data['message']
-				for obj in queryset:
-					post_data = {'receiver': obj.id, 'message': message+obj.name}
+				users = form.cleaned_data['users']
+				for user in users:
+					post_data = {'receiver': user.id, 'message': message+user.name}
 					post_data['receiver'] = "Ufedbdb7c3d944c326a4251ac135b69e3"
 					responese = Requests.post("https://gentle-fjord-43717.herokuapp.com/push", data=post_data)
 					print (responese.content)
-				self.message_user(request, "{} message successfully send.".format(len(queryset)))
+				self.message_user(request, "{} message successfully send.".format(len(users)))
 				return HttpResponseRedirect(request.get_full_path())
 
 		if not form:
-			form = MessageForm(initial={'message': ""})
+			form = MessageForm(initial={'message': "", 'users' :queryset})
 
 		return render(request, "admin/user/action_push_message.html", {'users': queryset, 'form': form})
 		# return render_to_response("admin/user/action_push_message.html", {'users': queryset, 'form': form})
