@@ -8,18 +8,12 @@
 {% load i18n admin_static material_form %} 
 
 {% block content %}
-    <form action="" style="padding: 30px" method="post">
+    <form action="" class="viewform" method="post"> {% csrf_token %}
 
-        <!-- <ul>{{ users|unordered_list }}</ul> -->
-        <p>
-        	Pushing message to the following user:
-        </p>
-
-    	{% csrf_token %}
-        {% form form=form %}{% endform %}
+        {% form form=form layout=form.layout%}{% endform %}
         <input type="hidden" name="_selected_action" value="{users.pk}">
 		<input type="hidden" name="action" value="push_message" />
-	    <button type='submit' name='push' class="btn">Push Message</button>
+	    <button type='submit' name='push' class="btn btn-primary btn-lg">Push Message</button>
 
     </form>
 {% endblock %}

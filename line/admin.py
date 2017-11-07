@@ -1,7 +1,7 @@
 from django.contrib import admin
-import requests as Requests
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
+from .utils import push_message_to_users
 
 # Register your models here.
 from .models import *
@@ -61,6 +61,7 @@ class TourOfferingAdmin(admin.ModelAdmin):
 	list_display = ['tour_name', 'get_user_name', 'price', 'state', 'offer_date', 'was_offered_recently']
 	search_fields = ['tour__name']
 	list_filter = ['offer_date']
+	icon = '<i class="material-icons">event</i>'
 
 @admin.register(Tour)
 class TourAdmin(admin.ModelAdmin):
@@ -68,11 +69,17 @@ class TourAdmin(admin.ModelAdmin):
 	inlines = [TourOfferingInline]
 	search_fields = ['name', 'description']	
 	list_filter = ['duration', 'weekday_price', 'weekend_price']
+	icon = '<i class="material-icons">flight_takeoff</i>'
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
 	search_fields = ['tourOffering__tour__name', 'user__name']
 	list_display = ('tour_name', 'user_name')
+	icon = '<i class="material-icons">archive</i>'
+	def save_model(self, request, obj, form, change):
+		if obj.tour_fee == obj.paid_fee:
+			push_message_to_users([obj.user], "Paid Confirmed")
+		obj.save()
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -90,11 +97,7 @@ class UserAdmin(admin.ModelAdmin):
 				print (form.cleaned_data)
 				message = form.cleaned_data['message']
 				users = form.cleaned_data['users']
-				for user in users:
-					post_data = {'receiver': user.id, 'message': message+user.name}
-					post_data['receiver'] = "Ufedbdb7c3d944c326a4251ac135b69e3"
-					responese = Requests.post("https://gentle-fjord-43717.herokuapp.com/push", data=post_data)
-					print (responese.content)
+				push_message_to_users(users, message)
 				self.message_user(request, "{} message successfully send.".format(len(users)))
 				return HttpResponseRedirect(request.get_full_path())
 
@@ -113,6 +116,7 @@ class UserAdmin(admin.ModelAdmin):
 	search_fields = ['id', 'name']
 	list_filter = ['last_login']
 	empty_value_display = '-Not filled-'
+	icon = '<i class="material-icons">account_box</i>'
 
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):
@@ -120,10 +124,12 @@ class FaqAdmin(admin.ModelAdmin):
 	list_filter = ['hit']
 	list_display = ['question', 'answer', 'get_keyword', 'hit']
 	filter_horizontal = ['keyword']
+	icon = '<i class="material-icons">question_answer</i>'
 
 @admin.register(Keyword)
 class KeywordAdmin(admin.ModelAdmin):
 	search_fields = ['keyword_text']
+	icon = '<i class="material-icons">book</i>'
 
 @admin.register(UserChoose)
 class UserChooseAdmin(admin.ModelAdmin):
