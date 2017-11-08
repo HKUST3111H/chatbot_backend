@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from .utils import push_message_to_users
+from .utils import push_message_to_users, line_multicast, line_push
 
 # Register your models here.
 from .models import *
@@ -78,7 +78,7 @@ class BookingAdmin(admin.ModelAdmin):
 	icon = '<i class="material-icons">archive</i>'
 	def save_model(self, request, obj, form, change):
 		if obj.tour_fee == obj.paid_fee:
-			push_message_to_users([obj.user], "Paid Confirmed")
+			line_push(obj.user.id, "Paid Confirmed")
 		obj.save()
 
 @admin.register(User)
@@ -98,6 +98,7 @@ class UserAdmin(admin.ModelAdmin):
 				message = form.cleaned_data['message']
 				users = form.cleaned_data['users']
 				push_message_to_users(users, message)
+				line_multicast(list(users.values_list('id')), message)
 				self.message_user(request, "{} message successfully send.".format(len(users)))
 				return HttpResponseRedirect(request.get_full_path())
 
