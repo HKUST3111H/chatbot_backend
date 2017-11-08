@@ -38,7 +38,8 @@ def line_multicast(user_ids, message):
 	line_bot_api.multicast(user_ids, TextSendMessage(text=message))
 
 def line_push(user_id, message):
-	line_bot_api.push(user_id, message)
+	user_id = 'Ufedbdb7c3d944c326a4251ac135b69e3'
+	line_bot_api.push_message(user_id, TextSendMessage(text=message))
 
 def line_map_push(user_ids, messages):
 	pool = Pool(processes=len(users))

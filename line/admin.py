@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from .utils import push_message_to_users, line_multicast, line_push
+from django.core.urlresolvers import reverse
+from django.conf.urls import url
+from django.utils.html import format_html
 
 # Register your models here.
 from .models import *
@@ -74,12 +77,36 @@ class TourAdmin(admin.ModelAdmin):
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
 	search_fields = ['tourOffering__tour__name', 'user__name']
-	list_display = ('tour_name', 'user_name')
+	list_display = ('tour_name', 'user_name', 'booking_action')
 	icon = '<i class="material-icons">archive</i>'
 	def save_model(self, request, obj, form, change):
 		if obj.tour_fee == obj.paid_fee:
-			line_push(obj.user.id, "Paid Confirmed")
+			line_push(obj.user.id, "Paymetn Confirmed")
 		obj.save()
+
+	def booking_action(self, obj):
+		return format_html(
+			'<a class="button" href="{}">Paid</a>&nbsp;',
+			reverse('admin:booking-push_confirm_message', args=[obj.pk]),
+		)
+
+	def get_urls(self):
+		urls = super(BookingAdmin, self).get_urls()
+		custom_urls = [
+			url(
+				r'^(?P<booking_id>\d+)/push_confirm_message/$',
+				self.admin_site.admin_view(self.push_confirm_message),
+				name='booking-push_confirm_message',
+			),
+		]
+		return custom_urls + urls
+
+	def push_confirm_message(self, request, booking_id, *args, **kwargs):
+		user_id = Booking.objects.get(pk=booking_id).user.pk
+		line_push(user_id, "Payment Confirmed")
+		self.message_user(request, "Successfully sent message to {}.".format(User.objects.get(pk=user_id).name))
+		return HttpResponseRedirect(reverse('admin:line_booking_changelist'))
+		# return self.changeform_view(request, user_id)
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
