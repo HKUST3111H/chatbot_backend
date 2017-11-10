@@ -58,10 +58,50 @@ class TourOfferingAdmin(admin.ModelAdmin):
 			booking.save()
 		obj.save()
 
+	def tour_offering_actions(self, obj):
+		return format_html(
+			'<a class="" href="{}">Confirm</a>&nbsp;&nbsp;'
+			'<a class="" href="{}">Cancel</a>',
+			reverse("admin:tour_offering_confirm", args=[obj.pk]),
+			reverse("admin:tour_offering_cancel", args=[obj.pk]),
+			)
+
+	def get_urls(self):
+		urls = super(TourOfferingAdmin, self).get_urls()
+		custom_urls = [
+			url(
+				r'^(?P<tour_offering_id>\d+)/confirm/$',
+				self.admin_site.admin_view(self.confirm),
+				name='tour_offering_confirm',
+			),
+			url(
+				r'^(?P<tour_offering_id>\d+)/cancel/$',
+				self.admin_site.admin_view(self.cancel),
+				name='tour_offering_cancel',
+			),
+		]
+		return custom_urls + urls
+
+	def confirm(self, request, tour_offering_id, *args, **kwargs):
+		obj = self.get_object(request, tour_offering_id)
+		self.message_user(request, "Successfully Confirmed.")
+		message = "Your tour {} on {} is confirmed!".format(obj.tour.name, obj.offer_date.data())
+		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id')), message)
+		return self.changelist_view(request)
+		# return HttpResponseRedirect(reverse('admin:line_tourOffering_changelist'))
+
+
+	def cancel(self, request, tour_offering_id, *args, **kwargs):
+		obj = self.get_object(request, tour_offering_id)
+		self.message_user(request, "Successfully Canceled.")
+		message = "Your tour {} on {} is canceled!".format(obj.tour.name, obj.offer_date.date())
+		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id')), message)
+		return self.changelist_view(request)
+
 	actions = [update_price]
 	exclude = ['price']
 	inlines = [BookingInline, ]
-	list_display = ['tour_name', 'get_user_name', 'price', 'state', 'offer_date', 'was_offered_recently']
+	list_display = ['tour_name', 'get_user_name', 'price', 'state', 'offer_date', 'was_offered_recently', 'tour_offering_actions']
 	search_fields = ['tour__name']
 	list_filter = ['offer_date']
 	icon = '<i class="material-icons">event</i>'
@@ -105,8 +145,8 @@ class BookingAdmin(admin.ModelAdmin):
 		user_id = Booking.objects.get(pk=booking_id).user.pk
 		line_push(user_id, "Payment Confirmed")
 		self.message_user(request, "Successfully sent message to {}.".format(User.objects.get(pk=user_id).name))
-		return HttpResponseRedirect(reverse('admin:line_booking_changelist'))
-		# return self.changeform_view(request, user_id)
+		# return HttpResponseRedirect(reverse('admin:line_booking_changelist'))
+		return self.changelist_view(request)
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
