@@ -199,3 +199,7 @@ class KeywordAdmin(admin.ModelAdmin):
 @admin.register(UserChoose)
 class UserChooseAdmin(admin.ModelAdmin):
 	search_fields = ['user__name']
+
+@admin.register(UnknownQuestion)
+class UnknownQuestion(UnknownQuestion):
+	search_fields = ['question']
