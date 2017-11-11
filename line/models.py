@@ -2,6 +2,7 @@ from django.db import models
 
 import datetime
 from django.utils import timezone
+from .constants import *
 # Create your models here.
 
 class User(models.Model):
@@ -76,7 +77,7 @@ class TourOffering(models.Model):
 	capacity_max = models.IntegerField(default=30)
 	guide_name = models.CharField(max_length=20)
 	guide_line = models.CharField(max_length=50)
-	state = models.IntegerField(default=0)
+	state = models.IntegerField(default=0, choices=TourOfferingState.VALUE_TO_NAME.items())
 	price = models.DecimalField(default=0, max_digits=8, decimal_places=2)
 
 	was_offered_recently.admin_order_field = 'offer_date'
@@ -136,7 +137,7 @@ class Booking(models.Model):
 	tour_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2, null=True)
 	paid_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2, null=True)
 	special_request = models.CharField(default="None", max_length=200, null=True)
-	state = models.IntegerField(default=0)
+	state = models.IntegerField(default=0, choices=BookingState.VALUE_TO_NAME.items())
 
 class UserChoose(models.Model):
 	def __str__(self):
