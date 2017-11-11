@@ -101,7 +101,7 @@ class TourOfferingAdmin(admin.ModelAdmin):
 	actions = [update_price]
 	exclude = ['price']
 	inlines = [BookingInline, ]
-	list_display = ['tour_name', 'get_user_name', 'price', 'state', 'offer_date', 'was_offered_recently', 'tour_offering_actions']
+	list_display = ['tour_name', 'user_names', 'price', 'state', 'offer_date', 'was_offered_recently', 'tour_offering_actions']
 	search_fields = ['tour__name']
 	list_filter = ['offer_date']
 	icon = '<i class="material-icons">event</i>'

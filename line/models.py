@@ -46,7 +46,7 @@ class Tour(models.Model):
 class TourOffering(models.Model):
 
 	def __str__(self):
-		return self.tour.name
+		return self.tour_name
 	
 	def was_offered_recently(self):
 		now = timezone.now()
@@ -61,7 +61,7 @@ class TourOffering(models.Model):
 	def tour_name(self):
 		return self.tour.name + " " + str(self.id)
 
-	def get_user_name(self):
+	def user_names(self):
 		return "<br>".join([user.name for user in self.user.all() if user.name is not None])
 
 	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
@@ -83,8 +83,8 @@ class TourOffering(models.Model):
 	was_offered_recently.boolean = True
 	was_offered_recently.short_description = 'Offered recently?'
 
-	get_user_name.allow_tags = True
-	get_user_name.short_description = "User name"
+	user_names.allow_tags = True
+	user_names.short_description = "User name"
 
 class Discount(models.Model):
 
@@ -117,11 +117,13 @@ class Discount(models.Model):
 class Booking(models.Model):
 
 	def __str__(self):
-		return self.tourOffering.tour.name
+		return self.tour_name
 
+	@property
 	def tour_name(self):
-		return self.tourOffering.tour.name
+		return self.tourOffering.tour_name
 
+	@property
 	def user_name(self):
 		return self.user.name
 
