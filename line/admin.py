@@ -201,5 +201,7 @@ class UserChooseAdmin(admin.ModelAdmin):
 	search_fields = ['user__name']
 
 @admin.register(UnknownQuestion)
-class UnknownQuestion(UnknownQuestion):
+class UnknownQuestionAdmin(admin.ModelAdmin):
 	search_fields = ['question']
+	icon = '<i class="material-icons"> question_answer</i>'
+	list_display = ['question', 'hit']

@@ -143,3 +143,4 @@ class UnknownQuestion(models.Model):
 		return self.question
 
 	question = models.CharField(max_length=500)
+	hit = models.IntegerField(default=0)
