@@ -86,7 +86,7 @@ class TourOfferingAdmin(admin.ModelAdmin):
 		obj = self.get_object(request, tour_offering_id)
 		self.message_user(request, "Successfully Confirmed.")
 		message = "Your tour {} on {} is confirmed!".format(obj.tour.name, obj.offer_date.data())
-		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id')), message)
+		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id', flat=True)), message)
 		return self.changelist_view(request)
 		# return HttpResponseRedirect(reverse('admin:line_tourOffering_changelist'))
 
@@ -95,7 +95,7 @@ class TourOfferingAdmin(admin.ModelAdmin):
 		obj = self.get_object(request, tour_offering_id)
 		self.message_user(request, "Successfully Canceled.")
 		message = "Your tour {} on {} is canceled!".format(obj.tour.name, obj.offer_date.date())
-		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id')), message)
+		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id', flat=True)), message)
 		return self.changelist_view(request)
 
 	actions = [update_price]
@@ -158,14 +158,11 @@ class UserAdmin(admin.ModelAdmin):
 		print (request.POST)
 		if 'push' in request.POST:
 			form = MessageForm(request.POST)
-			print ("POST")
 			if form.is_valid():
-				print ("valid")
-				print (form.cleaned_data)
 				message = form.cleaned_data['message']
 				users = form.cleaned_data['users']
-				push_message_to_users(users, message)
-				line_multicast(list(users.values_list('id')), message)
+				# push_message_to_users(users, message)
+				line_multicast(list(users.values_list('id', flat=True)), message)
 				self.message_user(request, "{} message successfully send.".format(len(users)))
 				return HttpResponseRedirect(request.get_full_path())
 
