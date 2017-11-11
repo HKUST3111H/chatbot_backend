@@ -26,7 +26,7 @@ class BookingInline(admin.TabularInline):
 @admin.register(TourOffering)
 class TourOfferingAdmin(admin.ModelAdmin):
 
-	# input is TourOffering obejct
+	# input is TourOffering object
 	def default_offer_fee(self, obj):
 		if obj.offer_date.weekday() < 5:
 			return obj.tour.weekday_price
@@ -116,8 +116,8 @@ class TourAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-	search_fields = ['tourOffering__tour__name', 'user__name']
-	list_display = ('tour_name', 'user_name', 'booking_action')
+	search_fields = ['tourOffering__tour__name', 'user__name',]
+	list_display = ('tour_name', 'user_name', 'booking_action', 'state')
 	icon = '<i class="material-icons">archive</i>'
 	def save_model(self, request, obj, form, change):
 		if obj.tour_fee == obj.paid_fee:
@@ -148,6 +148,14 @@ class BookingAdmin(admin.ModelAdmin):
 		# return HttpResponseRedirect(reverse('admin:line_booking_changelist'))
 		return self.changelist_view(request)
 
+@admin.register(Discount)
+class DiscountAdmin(admin.ModelAdmin):
+	search_fields = ['name']
+	list_display = ['name', 'push_date', 'rate', 'seat', 'quota', 'available', 'will_push_recently', 'pushed', ]
+	list_filter = ['push_date', 'rate', 'quota']
+	icon = '<i class="material-icons">alarm</i>'
+
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
 
@@ -172,9 +180,18 @@ class UserAdmin(admin.ModelAdmin):
 		return render(request, "admin/user/action_push_message.html", {'users': queryset, 'form': form})
 		# return render_to_response("admin/user/action_push_message.html", {'users': queryset, 'form': form})
 
+	def recommend(self, request, queryset):
+		for obj in queryset:
+			print (list((TourOffering.objects.exclude(pk__in = obj.booking_set.all().filter(state=2).values_list('tourOffering__id', flat=True))).values_list('tour__name', flat=True)))
+			tour_name_list = list((TourOffering.objects.exclude(pk__in = obj.booking_set.filter(state=2).values_list('tourOffering__id', flat=True))).values_list('tour__name', flat=True))
+			message = "Based on your travel history, we recommend the following tours to you for your information.\n"
+			for i, tour_name in enumerate(tour_name_list):
+				message += "{}. {} \n".format(i, tour_name)
+			# print (obj.pk, message)
+			line_push(obj.pk, message)
+		self.message_user(request, "{} message successfully send. ".format(len(queryset)))
 
-
-	actions = [push_message]
+	actions = [push_message, recommend]
 	inlines = [BookingInline,]
 	list_display = ['name', 'line_id', 'phone_num', 'state', 'last_login', 'travel_id',]
 	exclude = ['id',]

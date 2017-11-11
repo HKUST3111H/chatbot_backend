@@ -50,16 +50,16 @@ class TourOffering(models.Model):
 	
 	def was_offered_recently(self):
 		now = timezone.now()
-		return now >= self.offer_date >= now - datetime.timedelta(days=1)
+		return self.offer_date >= now - datetime.timedelta(days=3)
 
 	def default_offer_time():
 	    now = timezone.now()
 	    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 	    return start
 
-
+	@property
 	def tour_name(self):
-		return self.tour.name
+		return self.tour.name + " " + str(self.id)
 
 	def get_user_name(self):
 		return "<br>".join([user.name for user in self.user.all() if user.name is not None])
@@ -86,6 +86,34 @@ class TourOffering(models.Model):
 	get_user_name.allow_tags = True
 	get_user_name.short_description = "User name"
 
+class Discount(models.Model):
+
+	def __str__(self):
+		return self.name
+
+	def default_push_date():
+		now = timezone.now()
+		timezone.now()+datetime.timedelta(days=7)
+
+	def available(self):
+		return self.quota - len(self.tourOffering.user.all())
+
+	def will_push_recently(self):
+		now = timezone.now()
+		return now + datetime.timedelta(days=3) > self.push_date > now
+
+	name = models.CharField(max_length=50)	
+	tourOffering = models.ForeignKey(TourOffering, on_delete=models.CASCADE)
+	push_date = models.DateTimeField('push_date', default=default_push_date)
+	rate = models.DecimalField(default=0.8, max_digits=3, decimal_places=2)
+	seat = models.IntegerField(default=2)
+	quota = models.IntegerField(default=4)
+	pushed = models.BooleanField(default=False)
+
+	will_push_recently.admin_order_field = 'push_date'
+	will_push_recently.boolean = True
+	will_push_recently.short_description = 'Pushing recently?'
+
 class Booking(models.Model):
 
 	def __str__(self):
@@ -98,6 +126,7 @@ class Booking(models.Model):
 		return self.user.name
 
 	tourOffering = models.ForeignKey(TourOffering, on_delete=models.CASCADE)
+	discount = models.ForeignKey(Discount, null = True, on_delete=models.SET_NULL)
 	user  = models.ForeignKey(User, on_delete=models.CASCADE)
 	adult_num = models.IntegerField(default=1, null=True)
 	child_num = models.IntegerField(default=0, null=True)

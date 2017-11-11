@@ -33,10 +33,16 @@ def push_message_to_users(user_ids, message):
 line_bot_api = LineBotApi(channel_access_token)
 
 def line_multicast(user_ids, message):
-	line_bot_api.multicast(user_ids, TextSendMessage(text=message))
+	try:
+		line_bot_api.multicast(user_ids, TextSendMessage(text=message))
+	except Exception as e:
+		print (e)
 
 def line_push(user_id, message):
-	line_bot_api.push_message(user_id, TextSendMessage(text=message))
+	try:
+		line_bot_api.push_message(user_id, TextSendMessage(text=message))
+	except Exception as e:
+		print (e)
 
 def line_map_push(user_ids, messages):
 	pool = Pool(processes=len(users))
