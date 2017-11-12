@@ -62,6 +62,13 @@ class TourOffering(models.Model):
 	def tour_name(self):
 		return self.tour.name + " " + str(self.id)
 
+	@property
+	def total_num(self):
+		return sum([b.total_num for b in self.booking_set.all()])
+
+	def available(self):
+		return self.capacity_max - self.total_num
+
 	def user_names(self):
 		return "<br>".join([user.name for user in self.user.all() if user.name is not None])
 
@@ -127,6 +134,10 @@ class Booking(models.Model):
 	@property
 	def user_name(self):
 		return self.user.name
+
+	@property
+	def total_num(self):
+		return self.adult_num + self.child_num + self.child_num
 
 	tourOffering = models.ForeignKey(TourOffering, on_delete=models.CASCADE)
 	discount = models.ForeignKey(Discount, null = True, on_delete=models.SET_NULL)

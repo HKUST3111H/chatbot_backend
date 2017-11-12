@@ -60,7 +60,8 @@ class TourOfferingAdmin(admin.ModelAdmin):
 
 	def tour_offering_actions(self, obj):
 		return format_html(
-			'<a class="" href="{}">Confirm</a>&nbsp;&nbsp;'
+			'<a class="" href="{}">Confirm</a>'
+			'<br>'
 			'<a class="" href="{}">Cancel</a>',
 			reverse("admin:tour_offering_confirm", args=[obj.pk]),
 			reverse("admin:tour_offering_cancel", args=[obj.pk]),
@@ -85,7 +86,7 @@ class TourOfferingAdmin(admin.ModelAdmin):
 	def confirm(self, request, tour_offering_id, *args, **kwargs):
 		obj = self.get_object(request, tour_offering_id)
 		self.message_user(request, "Successfully Confirmed.")
-		message = "Your tour {} on {} is confirmed!".format(obj.tour.name, obj.offer_date.data())
+		message = "Your tour {} on {} is confirmed!".format(obj.tour.name, obj.offer_date.date())
 		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id', flat=True)), message)
 		return self.changelist_view(request)
 		# return HttpResponseRedirect(reverse('admin:line_tourOffering_changelist'))
@@ -98,10 +99,11 @@ class TourOfferingAdmin(admin.ModelAdmin):
 		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id', flat=True)), message)
 		return self.changelist_view(request)
 
+	tour_offering_actions.short_description = "Action"
 	actions = [update_price]
 	exclude = ['price']
 	inlines = [BookingInline, ]
-	list_display = ['tour_name', 'user_names', 'price', 'state', 'offer_date', 'was_offered_recently', 'tour_offering_actions']
+	list_display = ['tour_name', 'user_names', 'price', 'state', 'offer_date', 'available', 'tour_offering_actions']
 	search_fields = ['tour__name']
 	list_filter = ['offer_date']
 	icon = '<i class="material-icons">event</i>'
@@ -116,9 +118,6 @@ class TourAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-	search_fields = ['tourOffering__tour__name', 'user__name',]
-	list_display = ('tour_name', 'user_name', 'booking_action', 'state')
-	icon = '<i class="material-icons">archive</i>'
 	def save_model(self, request, obj, form, change):
 		if obj.tour_fee == obj.paid_fee:
 			line_push(obj.user.id, "Paymetn Confirmed")
@@ -147,6 +146,11 @@ class BookingAdmin(admin.ModelAdmin):
 		self.message_user(request, "Successfully sent message to {}.".format(User.objects.get(pk=user_id).name))
 		# return HttpResponseRedirect(reverse('admin:line_booking_changelist'))
 		return self.changelist_view(request)
+
+	search_fields = ['tourOffering__tour__name', 'user__name',]
+	list_display = ('tour_name', 'user_name', 'booking_action', 'state')
+	icon = '<i class="material-icons">archive</i>'
+	booking_action.short_description = "Action"
 
 @admin.register(Discount)
 class DiscountAdmin(admin.ModelAdmin):

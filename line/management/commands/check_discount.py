@@ -8,11 +8,11 @@ class Command(BaseCommand):
     help = 'Check whether the discount is pushed'
 
     def add_arguments(self, parser):
-        parser.add_argument('--minute', default=5, type=int)
+        parser.add_argument('--minutes', default=5, type=int)
 
     def handle(self, *args, **options):
     	now = timezone.now()
-    	delta = datetime.timedelta(minutes=options['minute'])
+    	delta = datetime.timedelta(minutes=options['minutes'])
     	discounts = Discount.objects.filter(pushed=False).filter(push_date__range= [now - delta, now + delta])
     	message = "We are offering following discount!\n\n"
     	for discount in discounts:

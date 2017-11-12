@@ -33,6 +33,8 @@ def push_message_to_users(user_ids, message):
 line_bot_api = LineBotApi(channel_access_token)
 
 def line_multicast(user_ids, message):
+	if not user_ids:
+		return
 	try:
 		line_bot_api.multicast(user_ids, TextSendMessage(text=message))
 	except Exception as e:
