@@ -17,9 +17,8 @@ class ChoiceEnum(Enum):
 
 class BookingState(ChoiceEnum):
 	IS_BOOKING = 0
-	DONE = 1
-	CONFIRMED = 2
-	PAID = 4
+	CONFIRMED = 1
+	PAID = 2
 
 class TourOfferingState(ChoiceEnum):
 	OPEN = 0

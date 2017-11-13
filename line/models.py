@@ -66,11 +66,18 @@ class TourOffering(models.Model):
 	def total_num(self):
 		return sum([b.total_num for b in self.booking_set.all()])
 
+	@property
+	def paid_total_num(self):
+		return sum([b.total_num for b in self.booking_set.all() if b.state == BookingState.PAID.value])
+
 	def available(self):
 		return self.capacity_max - self.total_num
 
 	def user_names(self):
 		return "<br>".join([user.name for user in self.user.all() if user.name is not None])
+
+	def offer_date_only(self):
+		return self.offer_date.date()
 
 	tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 	offer_date = models.DateTimeField('offer date', default=default_offer_time)
@@ -140,7 +147,7 @@ class Booking(models.Model):
 		return self.adult_num + self.child_num + self.child_num
 
 	tourOffering = models.ForeignKey(TourOffering, on_delete=models.CASCADE)
-	discount = models.ForeignKey(Discount, null = True, on_delete=models.SET_NULL)
+	discount = models.ForeignKey(Discount, blank = True, null = True, on_delete=models.SET_NULL)
 	user  = models.ForeignKey(User, on_delete=models.CASCADE)
 	adult_num = models.IntegerField(default=1, null=True)
 	child_num = models.IntegerField(default=0, null=True)

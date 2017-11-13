@@ -85,6 +85,7 @@ class TourOfferingAdmin(admin.ModelAdmin):
 
 	def confirm(self, request, tour_offering_id, *args, **kwargs):
 		obj = self.get_object(request, tour_offering_id)
+		obj.state = TourOfferingState.CONFIRMED.value
 		self.message_user(request, "Successfully Confirmed.")
 		message = "Your tour {} on {} is confirmed!".format(obj.tour.name, obj.offer_date.date())
 		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id', flat=True)), message)
@@ -94,6 +95,8 @@ class TourOfferingAdmin(admin.ModelAdmin):
 
 	def cancel(self, request, tour_offering_id, *args, **kwargs):
 		obj = self.get_object(request, tour_offering_id)
+		obj.state = TourOfferingState.CANCELED.value
+		obj.save()
 		self.message_user(request, "Successfully Canceled.")
 		message = "Your tour {} on {} is canceled!".format(obj.tour.name, obj.offer_date.date())
 		line_multicast(list(TourOffering.objects.get(pk=tour_offering_id).user.values_list('id', flat=True)), message)
@@ -103,7 +106,7 @@ class TourOfferingAdmin(admin.ModelAdmin):
 	actions = [update_price]
 	exclude = ['price']
 	inlines = [BookingInline, ]
-	list_display = ['tour_name', 'user_names', 'price', 'state', 'offer_date', 'available', 'tour_offering_actions']
+	list_display = ['tour_name', 'user_names', 'price', 'state', 'offer_date_only', 'available', 'tour_offering_actions']
 	search_fields = ['tour__name']
 	list_filter = ['offer_date']
 	icon = '<i class="material-icons">event</i>'
@@ -134,13 +137,16 @@ class BookingAdmin(admin.ModelAdmin):
 		custom_urls = [
 			url(
 				r'^(?P<booking_id>\d+)/push_confirm_message/$',
-				self.admin_site.admin_view(self.push_confirm_message),
+				self.admin_site.admin_view(self.paid),
 				name='booking-push_confirm_message',
 			),
 		]
 		return custom_urls + urls
 
-	def push_confirm_message(self, request, booking_id, *args, **kwargs):
+	def paid(self, request, booking_id, *args, **kwargs):
+		obj = self.get_object(request, booking_id)
+		obj.state = BookingState.PAID.value
+		obj.save()
 		user_id = Booking.objects.get(pk=booking_id).user.pk
 		line_push(user_id, "Payment Confirmed")
 		self.message_user(request, "Successfully sent message to {}.".format(User.objects.get(pk=user_id).name))
