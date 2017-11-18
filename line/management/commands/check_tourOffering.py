@@ -25,7 +25,7 @@ class Command(BaseCommand):
             else :
                 tourOffering.state = TourOfferingState.CANCELED.value
                 message = "Your tour {} on {} is canceled!\n".format(tourOffering.tour_name, tourOffering.offer_date.date())
-                message += "The minimum requirement is {} but only {} people booked. We are sorry.".format(tourOffering.capacity_min, tourOffering.total_num)
+                message += "The minimum requirement is {} but only {} people booked. We are sorry.".format(tourOffering.capacity_min, tourOffering.paid_total_num)
             tourOffering.save()
             line_multicast(list(tourOffering.user.all().values_list('id', flat=True)), message)
         self.stdout.write(self.style.SUCCESS(str(tourOfferings)))
