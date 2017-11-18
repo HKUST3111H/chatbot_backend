@@ -52,7 +52,7 @@ class TourOffering(models.Model):
         now = timezone.now()
         return self.offer_date >= now - datetime.timedelta(days=3)
 
-    def default_offer_time(self):
+    def default_offer_time(self=None):
         now = timezone.now()
         start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         return start
@@ -105,7 +105,7 @@ class Discount(models.Model):
     def __str__(self):
         return self.name
 
-    def default_push_date(self):
+    def default_push_date(self=None):
         return timezone.now()+datetime.timedelta(days=7)
 
     def available(self):
