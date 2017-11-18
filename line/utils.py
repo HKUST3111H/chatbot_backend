@@ -47,5 +47,5 @@ def line_push(user_id, message):
 		print (e)
 
 def line_map_push(user_ids, messages):
-	pool = Pool(processes=len(users))
+	pool = Pool(processes=len(user_ids))
 	pool.starmap_async(line_push, zip(user_ids, messages))
