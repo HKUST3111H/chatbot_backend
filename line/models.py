@@ -142,7 +142,16 @@ class Booking(models.Model):
 
     @property
     def total_num(self):
-        return self.adult_num + self.child_num + self.child_num
+        adult_num = 0
+        child_num = 0
+        toddler_num = 0
+        if self.adult_num:
+            adult_num = self.adult_num
+        if self.child_num:
+            child_num = self.child_num
+        if self.toddler_num:
+            toddler_num = self.toddler_num
+        return adult_num + child_num + toddler_num
 
     tourOffering = models.ForeignKey(TourOffering, on_delete=models.CASCADE)
     discount = models.ForeignKey(Discount, blank = True, null = True, on_delete=models.SET_NULL)
