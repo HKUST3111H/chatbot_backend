@@ -24,7 +24,7 @@ class User(models.Model):
     age = models.CharField(max_length=20, null=True)
     state = models.IntegerField(default=0)
     last_login = models.DateTimeField('login date', null=True)
-    travel_id = models.CharField(max_length=20, null=True)
+    travel_id = models.CharField(max_length=20, null=True, blank=True)
 
     line_id.admin_order_field = 'id'
     line_id.short_description = 'Line ID'
@@ -42,6 +42,8 @@ class Tour(models.Model):
     duration = models.IntegerField(default=3)
     weekday_price = models.IntegerField(default=0)
     weekend_price = models.IntegerField(default=0)
+    img_path = models.CharField(max_length=50, default="", blank=True, null=True)
+    tour_description = models.CharField(max_length=60, default="", blank=True, null=True)
 
 class TourOffering(models.Model):
 
