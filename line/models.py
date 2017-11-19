@@ -99,6 +99,9 @@ class TourOffering(models.Model):
     was_offered_recently.boolean = True
     was_offered_recently.short_description = 'Offered recently?'
 
+    offer_date.admin_order_field = 'offer_date'
+    offer_date.short_description = 'Departure Date'
+
     user_names.allow_tags = True
     user_names.short_description = "User name"
 
