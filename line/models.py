@@ -99,6 +99,9 @@ class TourOffering(models.Model):
     was_offered_recently.boolean = True
     was_offered_recently.short_description = 'Offered recently?'
 
+    offer_date.admin_order_field = 'offer_date'
+    offer_date.short_description = 'Departure Date'
+
     user_names.allow_tags = True
     user_names.short_description = "User name"
 
@@ -111,7 +114,7 @@ class Discount(models.Model):
         return timezone.now()+datetime.timedelta(days=7)
 
     def available(self):
-        return self.quota - len(self.tourOffering.user.all())
+        return max(self.quota - len(TourOffering.objects.filter(pk=self.tourOffering.pk).filter(booking__state=BookingState.CONFIRMED.value)), 0)
 
     def will_push_recently(self):
         now = timezone.now()
@@ -133,6 +136,9 @@ class Booking(models.Model):
 
     def __str__(self):
         return self.tour_name
+
+    def has_discount(self):
+        return self.discount is not None
 
     @property
     def tour_name(self):
@@ -165,6 +171,8 @@ class Booking(models.Model):
     paid_fee = models.DecimalField(default=0, max_digits=8, decimal_places=2, null=True)
     special_request = models.CharField(default="None", max_length=200, null=True)
     state = models.IntegerField(default=0, choices=BookingState.choices())
+
+    has_discount.boolean = True
 
 class UserChoose(models.Model):
     def __str__(self):
