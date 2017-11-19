@@ -2,9 +2,12 @@ certifi==2017.7.27.1
 chardet==3.0.4
 dj-database-url==0.4.2
 Django==1.11.5
+django-material==1.1.1
 flake8==3.4.1
+future==0.16.0
 gunicorn==19.7.1
 idna==2.6
+line-bot-sdk==1.5.0
 mccabe==0.6.1
 pew==0.1.27
 pipenv==8.2.6
