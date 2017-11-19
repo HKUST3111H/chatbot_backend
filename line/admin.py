@@ -203,11 +203,13 @@ class UserAdmin(admin.ModelAdmin):
 
     def recommend(self, request, queryset):
         for obj in queryset:
-            print (list((TourOffering.objects.exclude(pk__in = obj.booking_set.all().filter(state=2).values_list('tourOffering__id', flat=True))).values_list('tour__name', flat=True)))
-            tour_name_list = list((TourOffering.objects.exclude(pk__in = obj.booking_set.filter(state=2).values_list('tourOffering__id', flat=True))).values_list('tour__name', flat=True))
+            # print (list((TourOffering.objects.exclude(pk__in = obj.booking_set.all().filter(state=2).values_list('tourOffering__id', flat=True))).values_list('tour__name', flat=True)))
+            # tour_name_list = list((TourOffering.objects.exclude(pk__in = obj.booking_set.filter(state=2).values_list('tourOffering__id', flat=True))).values_list('tour__name', flat=True))
+            tour_name_list = list(Tour.objects.exclude(pk__in = obj.booking_set.filter(state=BookingState.PAID.value).values_list('tourOffering__tour__id', flat=True)))
+            print (tour_name_list)
             message = "Based on your travel history, we recommend the following tours to you for your information.\n"
             for i, tour_name in enumerate(tour_name_list):
-                message += "{}. {} \n".format(i, tour_name)
+                message += "{}. {} \n".format(i+1, tour_name)
             # print (obj.pk, message)
             line_push(obj.pk, message)
         self.message_user(request, "{} message successfully send. ".format(len(queryset)))
