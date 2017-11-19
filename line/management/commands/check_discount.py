@@ -17,7 +17,7 @@ class Command(BaseCommand):
     	message = "We are offering following discount!\n\n"
     	for discount in discounts:
     		message += "{}\n{}\n".format(discount.name, discount.tourOffering.tour_name)
-    		message += "Only {} quota!".format(discount.quota)
+    		message += "Only {} quota!\n".format(discount.quota)
     		discount.pushed = True
     		discount.save()
     	message += "Act now to book at the discount price!"
