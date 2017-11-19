@@ -165,7 +165,7 @@ class BookingAdmin(admin.ModelAdmin):
         return self.changelist_view(request)
 
     search_fields = ['tourOffering__tour__name', 'user__name',]
-    list_display = ('tour_name', 'user_name', 'booking_action', 'state')
+    list_display = ('tour_name', 'user_name', 'booking_action', 'state', 'has_discount')
     icon = '<i class="material-icons">archive</i>'
     booking_action.short_description = "Action"
 
