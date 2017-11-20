@@ -130,6 +130,12 @@ class TourAdmin(admin.ModelAdmin):
     list_filter = ['duration', 'weekday_price', 'weekend_price']
     icon = '<i class="material-icons">flight_takeoff</i>'
 
+    def default_offer_fee(self, obj):
+        if obj.offer_date.weekday() < 5:
+            return obj.tour.weekday_price
+        else:
+            return obj.tour.weekend_price
+
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):

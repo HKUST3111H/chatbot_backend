@@ -11,18 +11,19 @@ class Command(BaseCommand):
         parser.add_argument('--minutes', default=5, type=int)
 
     def handle(self, *args, **options):
-    	now = timezone.now()
-    	delta = datetime.timedelta(minutes=options['minutes'])
-    	discounts = Discount.objects.filter(pushed=False).filter(push_date__range= [now - delta, now + delta])
-    	message = "We are offering following discount!\n\n"
-    	for discount in discounts:
-    		message += "{}\n{}\n".format(discount.name, discount.tourOffering.tour_name)
-    		message += "Only {} quota!\n".format(discount.quota)
-    		discount.pushed = True
-    		discount.save()
-    	message += "Act now to book at the discount price!"
-    	print (message)
-    	if len(discounts):
-    		print ("sent!")
-	    	line_multicast(list(User.objects.all().values_list('id', flat=True)), message)
-    	self.stdout.write(self.style.SUCCESS(str(discounts)))
+        now = timezone.now()
+        delta = datetime.timedelta(minutes=options['minutes'])
+        discounts = Discount.objects.filter(pushed=False).filter(push_date__range= [now - delta, now + delta])
+        message = "We are offering following discount!\n\n"
+        for discount in discounts:
+            message += "{}\n{}\n".format(discount.name, discount.tourOffering.tour_name)
+            message += "Only {} quota!\n".format(discount.quota)
+            discount.pushed = True
+            discount.save()
+        message += "Act now to book at the discount price!\n"
+        message += "You can get the discount only if you received the congratulation message after booking."
+        print (message)
+        if len(discounts):
+            print ("sent!")
+            line_multicast(list(User.objects.all().values_list('id', flat=True)), message)
+        self.stdout.write(self.style.SUCCESS(str(discounts)))
