@@ -114,7 +114,8 @@ class Discount(models.Model):
         return timezone.now()+datetime.timedelta(days=7)
 
     def available(self):
-        return max(self.quota - len(TourOffering.objects.filter(pk=self.tourOffering.pk).filter(booking__state=BookingState.CONFIRMED.value)), 0)
+        # return max(self.quota - len(TourOffering.objects.filter(pk=self.tourOffering.pk).filter(booking__state=BookingState.CONFIRMED.value)), 0)
+        return self.quota - len(list(self.booking_set.all()))
 
     def will_push_recently(self):
         now = timezone.now()
